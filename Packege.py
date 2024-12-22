@@ -6,7 +6,7 @@ class Package:
         Args:
             version_string: numpy>=1.1.1
         """
-        # version_list = [name, (symbol), versionNumber1, versionNumber2, ...]
+        # version_list = [name, (symbol), (versionNumber1), (versionNumber2), ...]
         self.version_list = self.convert_version_as_list(version_string)
         self.name = self.version_list[0]
         self.symbol = self.version_list[1]
@@ -20,7 +20,7 @@ class Package:
 
 
     def get_version_as_string(self):
-        return '.'.join(self.version_number)
+        return '.'.join(self.version_number_list)
 
 
     @classmethod
