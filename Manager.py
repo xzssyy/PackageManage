@@ -1,6 +1,6 @@
 from pathlib import Path
 from Packege import Package
-import numpy as np
+from functools import cmp_to_key
 
 class Manager:
     """
@@ -19,37 +19,43 @@ class Manager:
 
         self.nodes = []
         self.nodes_idx = None
-        self.packages = []
-        self.nodes_num = 0
-        self.packages_num = 0
-        # 初始化为100*1000的数组
-        self.np_map = np.zeros((100, 1000))
+        self.packages_version_dict = {}
+        self.packages_updated_version = {}
+
         self.read_data()
+        self.sort_version()
 
 
 
 
     def read_data(self):
-        self.
-        self.nodes_idx = {folder.name : idx for idx, folder in enumerate(self.root.iterdir()) if folder.is_dir()}
-        for node_name, _ in self.nodes.items():
-            self.read_node_packages(node_name)
+        """
+            读取客制化节点根目录下的描述数据：客制化节点名称，依赖包
+        Returns:
+
+        """
+        self.nodes = [folder.name for idx, folder in enumerate(self.root.iterdir()) if folder.is_dir()]
+
+        for node_name in self.nodes:
+            req_path = Path(self.root, node_name, "requirements.txt")
+            if not req_path.exists():
+                return
+
+            with open(req_path, "r", encoding="utf-8") as f:
+                lines = f.readlines()
+                for line in lines:
+                    package = Package(line.strip('\n'))
+                    # 添加version进待排序列表
+                    self.packages_version_dict.setdefault(package.name, []).append((package.symbol, package.version_number_list))
 
 
-
-
-    def read_node_packages(self, node_name):
-
-        req_path = Path(self.root, node_name, "requirements.txt")
-        if not req_path.exists():
-            return
-
-        with open(req_path, "r", encoding="utf-8") as f:
-            lines = f.readlines()
-            for line in lines:
-                package = Package(line)
-
-
+    def sort_version(self):
+        for package_name, version_list in self.packages_version_dict.items():
+            l = sorted(version_list, key=cmp_to_key(Package.version_cmp))
+            version_list.clear()
+            for idx, version in enumerate(l):
+                if idx == 0 or l[idx-1] != version:
+                    version_list.append(version)
 
     def judge_conflict(self, base_package, package):
         pass
@@ -73,4 +79,4 @@ class Manager:
             lines = f.readlines()
             for line in lines:
                 temp_package = Package(line)
-                if self.judge_conflict()
+                #if self.judge_conflict()

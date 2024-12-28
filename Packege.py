@@ -1,3 +1,6 @@
+import re
+
+
 class Package:
 
     def __init__(self, version_string):
@@ -7,44 +10,17 @@ class Package:
             version_string: numpy>=1.1.1
         """
         # version_list = [name, (symbol), (versionNumber1), (versionNumber2), ...]
-        self.version_list = self.convert_version_as_list(version_string)
-        self.name = self.version_list[0]
-        self.symbol = self.version_list[1]
-        self.version_number_list = self.version_list[2:]
-
+        patten = r"([a-zA-Z0-9_.]+)+(<=|<|>=|>|==|!=)*([\d.]+)*"
+        match = re.match(patten, version_string)
+        self.name = match.group(0)
+        self.symbol = match.group(1)
+        self.version = match.group(2)
+        self.version_number_list =self.version.split(",") if self.version else []
 
     def __eq__(self, other):
         if isinstance(other, Package):
             return self.name == other.name
         return False
-
-
-    def get_version_as_string(self):
-        return '.'.join(self.version_number_list)
-
-
-    @classmethod
-    def convert_version_as_list(cls, version_string):
-        """
-        将记录转换为字符串的列表
-        Args:
-            version_string: numpy>=1.1.1
-
-        Returns:
-            [package_name, symbol, version_number1, version_number2, ...]
-        """
-        version_as_list = version_string.name.split('.')
-
-        symbol_list=["==", '<=', '>=']
-
-        for s in symbol_list:
-            if s in version_as_list[0]:
-                t = version_as_list[0].split(s)
-                return [*t, *version_as_list[1:]]
-
-        version_as_list = [version_as_list[0], None, *version_as_list[1]]
-        return version_as_list
-
 
     @classmethod
     def version_cmp(cls, v1, v2):
