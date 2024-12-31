@@ -60,12 +60,6 @@ class Manager:
     def judge_conflict(self, base_package, package):
         pass
 
-
-
-
-
-
-
     def modify_req_file(self, node_name):
         """
         修改对应node的requirements文件

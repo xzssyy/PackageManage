@@ -1,11 +1,18 @@
 import re
 
 from Manager import Manager
+from Packege import Package
 
 
-# m = Manager('./custom_nodes')
+def main_test():
+    m = Manager('./custom_nodes')
 
-patten = r"([a-zA-Z0-9_.]+)+(<=|<|>=|>|==|!=)*([\d.]+)*"
-match = re.match(patten, "pack1==1.1.1")
-print(match)
-print(match.group(0))
+
+def unitest_cmp():
+    print(Package.version_cmp([1,2,3,4], [1, 2, 5]))
+
+
+
+if __name__ == "__main__":
+    unitest_cmp()
+
