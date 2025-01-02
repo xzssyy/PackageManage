@@ -14,5 +14,5 @@ def unitest_cmp():
 
 
 if __name__ == "__main__":
-    unitest_cmp()
+    main_test()
 

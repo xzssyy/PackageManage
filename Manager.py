@@ -24,6 +24,7 @@ class Manager:
 
         self.read_data()
         self.sort_version()
+        pass
 
 
 
@@ -46,11 +47,13 @@ class Manager:
                 for line in lines:
                     package = Package(line.strip('\n'))
                     # 添加version进待排序列表
-                    self.packages_version_dict.setdefault(package.name, []).append((package.symbol, package.version_number_list))
+                    if package.name is not None:
+                        self.packages_version_dict.setdefault(package.name, []).append(package)
 
 
     def sort_version(self):
         for package_name, version_list in self.packages_version_dict.items():
+
             l = sorted(version_list, key=cmp_to_key(Package.version_cmp))
             version_list.clear()
             for idx, version in enumerate(l):
