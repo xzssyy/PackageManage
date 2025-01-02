@@ -9,7 +9,10 @@ def main_test():
 
 
 def unitest_cmp():
-    print(Package.version_cmp([1,2,3,4], [1, 2, 5]))
+    p1 = Package("numpy>=1.2.3.4")
+    p2 = Package("numpy>=1.2.5")
+
+    print(Package.version_cmp(p2, p2))
 
 
 

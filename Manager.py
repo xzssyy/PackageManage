@@ -56,9 +56,9 @@ class Manager:
 
             l = sorted(version_list, key=cmp_to_key(Package.version_cmp))
             version_list.clear()
-            for idx, version in enumerate(l):
-                if idx == 0 or l[idx-1] != version:
-                    version_list.append(version)
+            for idx, package in enumerate(l):
+                if idx == 0 or l[idx-1] != package:
+                    version_list.append(package)
 
     def judge_conflict(self, base_package, package):
         pass

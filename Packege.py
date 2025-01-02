@@ -26,7 +26,7 @@ class Package:
 
     def __eq__(self, other):
         if isinstance(other, Package):
-            return self.name == other.name
+            return self.name == other.name and self.version == other.version
         return False
 
     @classmethod
@@ -43,6 +43,8 @@ class Package:
 
             if v1[0] > v2[0]:
                 return 1
+            elif v1[0] < v2[0]:
+                return -1
             else:
                 return 0
 
