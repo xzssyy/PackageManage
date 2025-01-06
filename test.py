@@ -12,7 +12,7 @@ def unitest_cmp():
     p1 = Package("numpy>=1.2.3.4")
     p2 = Package("numpy>=1.2.5")
 
-    print(Package.version_cmp(p2, p2))
+    print(Package.version_cmp(p1, p2))
 
 
 

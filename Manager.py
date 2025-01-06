@@ -11,7 +11,7 @@ class Manager:
     def __init__(self, custom_node_path):
         """
         保存数据结构
-        节点名称序号映射表， 包名称序号映射表， 节点序号与包序号的关系图
+        节点名称序号映射表， 包名称序号映射表， 节点序号与包序号的关系
         Args:
             custom_node_path: 
         """
@@ -19,14 +19,15 @@ class Manager:
 
         self.nodes = []
         self.nodes_idx = None
-        self.packages_version_dict = {}
-        self.packages_updated_version = {}
+        # {"package_name": [Package...]}
+        self.packages_dict = {}
+        # {"package_name": version}
+        self.standard_version_package = {}
 
         self.read_data()
         self.sort_version()
+        self.max_overlap_version_intervals()
         pass
-
-
 
 
     def read_data(self):
@@ -48,32 +49,73 @@ class Manager:
                     package = Package(line.strip('\n'))
                     # 添加version进待排序列表
                     if package.name is not None:
-                        self.packages_version_dict.setdefault(package.name, []).append(package)
+                        self.packages_dict.setdefault(package.name, []).append(package)
 
 
     def sort_version(self):
-        for package_name, version_list in self.packages_version_dict.items():
-
+        for package_name, version_list in self.packages_dict.items():
             l = sorted(version_list, key=cmp_to_key(Package.version_cmp))
-            version_list.clear()
-            for idx, package in enumerate(l):
-                if idx == 0 or l[idx-1] != package:
-                    version_list.append(package)
+            self.packages_dict[package_name] = l
 
-    def judge_conflict(self, base_package, package):
-        pass
+            # 考虑修改后受影响的节点数，不进行去重
+            # for idx, package in enumerate(l):
+            #     if idx == 0 or l[idx-1] != package:
+            #         version_list.append(package)
 
-    def modify_req_file(self, node_name):
+
+    def updater(self):
         """
-        修改对应node的requirements文件
+        通过比较version和symbol来更新requirements文件
         Args:
-            node_name: 
 
         Returns:
 
         """
-        with open(Path(self.root, node_name, "requirements.txt"), "r", encoding="utf-8") as f:
+        with open(Path(self.root, "requirements.txt"), "r", encoding="utf-8") as f:
             lines = f.readlines()
             for line in lines:
                 temp_package = Package(line)
-                #if self.judge_conflict()
+
+
+    def judge(self, package):
+        """
+        判断是否有冲突
+        Args:
+            package:
+
+        Returns:
+
+        """
+        pass
+
+    def max_overlap_version_intervals(self):
+        """
+        找出最大重叠区间
+        Returns:
+                Package
+        """
+        for package_name, package_list in self.packages_dict.items():
+            length = len(package_list)
+            counter = [0]*length
+            for idx, package in enumerate(package_list[1:]):
+                symbol = package.symbol
+                if symbol == "<" or symbol == "<=":
+                    counter[idx+1] = counter[idx]+1
+                elif symbol == ">" or symbol == ">=":
+                    counter[idx+1] = counter[idx]-1
+
+            max_overlap = max(counter)
+            max_index = counter.index(max_overlap)
+
+            # 新建标准对象
+            if max_index <= length / 2:
+                standard_symbol = ">="
+            else:
+                standard_symbol = "<="
+
+            version_string = package_list[max_index].name + standard_symbol + package_list[max_index].version
+            self.standard_version_package[package_name] = Package(version_string)
+
+
+
+
